@@ -1,0 +1,5 @@
+Pillow
+numpy
+lxml
+GDAL==3.11.5
+topojson

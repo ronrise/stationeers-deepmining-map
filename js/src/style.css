@@ -1,0 +1,28 @@
+body {
+    font-family: sans-serif;
+}
+
+svg {
+    border: 0 solid #ccc;
+}
+
+path {
+    stroke: #333;
+    stroke-width: 1px;
+    cursor: pointer;
+}
+
+text {
+    font-size: 10px;
+    fill: #111;
+    pointer-events: none;
+}
+
+.tooltip {
+    position: absolute;
+    background: lightgray;
+    padding: 5px;
+    font-size: 12px;
+    pointer-events: none;
+    opacity: 0;
+}

@@ -11,6 +11,7 @@ from pathlib import Path
 import sys
 import threading
 
+
 def build_terrain(normals_file, output_file):
     img = Image.open(normals_file).convert("RGB")
     arr = np.array(img).astype(np.float32)
@@ -21,6 +22,7 @@ def build_terrain(normals_file, output_file):
     new_size = (gray_img.width // 4, gray_img.height // 4)
     gray_img = gray_img.resize(new_size, Image.LANCZOS)
     gray_img.save(output_file)
+
 
 def normalize_names(names):
     names = list(names)
@@ -40,6 +42,7 @@ def normalize_names(names):
 
     return names
 
+
 def find_start_locations(root):
     start_names = []
     positions = []
@@ -51,7 +54,8 @@ def find_start_locations(root):
             positions.append((x, y))
             start_names.append(spawn.get("Id"))
     names = normalize_names(start_names)
-    return  {name: pos for name, pos in zip(names, positions)}
+    return {name: pos for name, pos in zip(names, positions)}
+
 
 def extract_regions(parent_path, node, keep_uncolored_features=False):
     calling_dir = os.getcwd()
@@ -142,7 +146,7 @@ def extract_regions(parent_path, node, keep_uncolored_features=False):
 
 
 def build_data(name, world_file):
-    output_prefix = Path(os.getcwd()) / "data" /name
+    output_prefix = Path("..") / "js" / "public" / "data" / name
     os.makedirs(output_prefix.parent, exist_ok=True)
 
     root = etree.parse(world_file).getroot()
@@ -169,7 +173,7 @@ def build_data(name, world_file):
     if name == "venus":
         normals_file = normals_file.replace("Mars", "Venus")
 
-    normals_file = (Path(world_file).parent.parent.parent/ normals_file).resolve()
+    normals_file = (Path(world_file).parent.parent.parent / normals_file).resolve()
     parent_path = Path(world_file).parent.parent.parent
     build_terrain(normals_file, str(output_prefix) + "_terrain.webp")
 
@@ -215,7 +219,7 @@ def build_data(name, world_file):
     alldata = {}
     alldata["start_locations"] = find_start_locations(root)
     for name, data in [("mining", mining_data), ("poi", poi_data), ("names", names_data)]:
-        alldata[name] = Topology(data).to_dict() #str(output_prefix) + f"_{name}.topojson")
+        alldata[name] = Topology(data).to_dict()  # str(output_prefix) + f"_{name}.topojson")
     json.dump(alldata, open(str(output_prefix) + f".json", "w"))
 
 

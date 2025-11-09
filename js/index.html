@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="us-EN">
+
+<head>
+    <meta charset="utf-8">
+    <title>Stationeers Maps</title>
+    <link rel="icon" type="image/webp" href="/images/icon_transparent.webp">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/topojson-client@3"></script>
+</head>
+
+<body>
+<div id="fileButtons">
+    <div id="buttonsHeader" style="display: inline-block;">
+        <div style="margin: 10px; display: flex; gap: 10px;">
+            <div id="planetButtons">
+                <button data-file="lunar">Lunar</button>
+                <button data-file="europa">Europa</button>
+                <button data-file="mars">Mars</button>
+                <button data-file="mimas">Mimas</button>
+                <button data-file="venus">Venus</button>
+                <button data-file="vulcan">Vulcan</button>
+            </div>
+
+            <div id="regionTypeButtons" style="margin-left: auto; display: flex; gap: 10px;">
+                <button data-region="mining">Mining</button>
+                <button data-region="names">Names</button>
+                <button data-region="poi">POI</button>
+            </div>
+        </div>
+    </div>
+    <div style="display: inline-block; margin-left: 20px; gap: 10px;">
+        <button id="share" title="Share view"
+                style="height: 40px; width: 40px; vertical-align: middle; display: inline-flex; align-items: center; justify-content: center;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                 viewBox="0 0 512 512">
+                <!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                <path
+                        d="M384 192c53 0 96-43 96-96s-43-96-96-96-96 43-96 96c0 5.4 .5 10.8 1.3 16L159.6 184.1c-16.9-15-39.2-24.1-63.6-24.1-53 0-96 43-96 96s43 96 96 96c24.4 0 46.6-9.1 63.6-24.1L289.3 400c-.9 5.2-1.3 10.5-1.3 16 0 53 43 96 96 96s96-43 96-96-43-96-96-96c-24.4 0-46.6 9.1-63.6 24.1L190.7 272c.9-5.2 1.3-10.5 1.3-16s-.5-10.8-1.3-16l129.7-72.1c16.9 15 39.2 24.1 63.6 24.1z"/>
+            </svg>
+        </button>
+    </div>
+</div>
+
+<div id="root" style="display: flex; align-items: flex-start;">
+    <div id="canvasContainer" style="position: relative;">
+        <svg id="svg" style="position: absolute; top: 0; left: 0;"></svg>
+        <div id="iconLayer"
+             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+        </div>
+    </div>
+
+    <div id="sidePane" style="margin-left: 20px;">
+        <label style="display: block; margin-top: 10px;">
+            <input type="checkbox" id="toggleTerrain" checked> Terrain
+        </label>
+        <label style="display: block;">
+            <input type="checkbox" id="toggleSpawn"> Start Locations
+        </label>
+        <label style="display: block;">
+            <input type="checkbox" id="toggleNorth"> North Up
+        </label>
+
+        <label style="display: block; margin-top: 20px; margin-bottom: 5px;">Regions</label>
+        <div id="colorFilter"></div>
+    </div>
+
+    <div class="tooltip" id="tooltip"></div>
+
+</div>
+
+<script type="module" src="/src/main.ts"></script>
+
+</body>
+
+</html>
+
