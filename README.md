@@ -7,8 +7,9 @@ forked from
 https://github.com/aproposmath/stationeers-deepmining-map
 
 ### improvements
-Updated to use vite and add docker support.
-Code updated to typeScript.
+- Updated to use vite and add docker support.
+- Code updated to typeScript.
+- tailwindcss added for styling.
 
 Running Stationeers Deep Mining Map in Docker
 ```shell
