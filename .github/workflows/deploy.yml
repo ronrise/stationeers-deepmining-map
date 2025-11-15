@@ -1,33 +1,59 @@
-name: Deploy Static Website to GitHub Pages
+name: "🚀✨ Deploy Static Website to GitHub Pages 🌐🎉"
 
 on:
+  workflow_dispatch: { }
   push:
     branches:
       - main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: "📥 Checkout repository"
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: "🧰 Setup Node.js v24"
         uses: actions/setup-node@v3
         with:
           node-version: '24'
 
-      - name: Install dependencies and build
+      - name: "📦 Install dependencies & Build (js) 🔧"
         run: |
+          echo "🔍 Entering js directory..."
           cd js
+          echo "⬇️ Installing dependencies (production only)..."
           npm i --no-dev
+          echo "🏗️ Building site..."
           npm run build
+          echo "✅ Build complete"
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: "⚙️ Setup GitHub Pages"
+        uses: actions/configure-pages@v5
+
+      - name: "📤 Upload artifact (dist) — ready for Pages"
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./js/dist
-          destination_dir: .
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
+          path: './js/dist'
+
+      - name: "🚢 Deploy to GitHub Pages — go live! 🌟"
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: "🎉 Publish result"
+        run: |
+          echo "🚀 Pages deployment finished."
+          if [ -n "${{ steps.deployment.outputs.page_url }}" ]; then
+            echo "🔗 Live at: ${{ steps.deployment.outputs.page_url }}"
+          else
+            echo "ℹ️ Deployment URL not available as output."
+          fi
