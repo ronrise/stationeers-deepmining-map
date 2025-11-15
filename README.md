@@ -4,10 +4,7 @@ Original Live version at
 https://aproposmath.github.io/stationeers-deepmining-map
 
 This fork live at
-https://ronrise.github.io/stationeers-deepmining-map/
-
-forked from
-https://github.com/aproposmath/stationeers-deepmining-map
+https://siteworxpro.github.io/stationeers-deepmining-map/
 
 ### improvements
 - Updated to use vite and add docker support.
