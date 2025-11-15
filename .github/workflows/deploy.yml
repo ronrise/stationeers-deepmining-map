@@ -30,7 +30,7 @@ jobs:
       - name: 🪄 Update base path in config
         run: |
           echo "🔍 Updating base path in config..."
-          sed -i 's|base: "/"|base: "/stationeers-deepmining-map/"|' js/vite.config.ts
+          sed -i "s|base: '/'|base: '/stationeers-deepmining-map/'|" js/vite.config.ts
           echo "✅ Base path updated"
 
       - name: "📦 Install dependencies & Build (js) 🔧"
