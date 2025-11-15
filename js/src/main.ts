@@ -7,6 +7,7 @@ import type {BaseType} from "d3";
 import {themeToggle, container, toggleTerrain, toggleSpawn, toggleNorth, fileButtons, sidePane, root} from "./elements";
 import {AUTOLATHE_ICON_URL, PLAYER_ICON_URL} from "./constants";
 import {onClickThemeToggle} from "./theme";
+import {getFromLocalStorage, saveToLocalStorage} from "./localstorage.ts";
 
 const svg = d3.select("#svg")
 const tooltip = d3.select("#tooltip")
@@ -62,15 +63,12 @@ function getSettingsFromUI() {
 }
 
 function applySettingsFromQuery(params: URLSearchParams) {
-    const terrain = params.get('terrain')
-    if (terrain !== null) {
-        toggleTerrain.checked = terrain === '1'
-    }
+    const terrain = params.get('terrain') || getFromLocalStorage('terrain', '1');
+    toggleTerrain.checked = terrain === '1'
 
-    const spawn = params.get('spawn')
-    if (spawn !== null) {
-        toggleSpawn.checked = spawn === '1'
-    }
+    let spawn = params.get('spawn') || getFromLocalStorage('spawn', '1');
+    toggleSpawn.checked = spawn === '1'
+
     const scale = parseFloat(params.get('zoom') ?? '1')
     const x = parseFloat(params.get('x') ?? '0')
     const y = parseFloat(params.get('y') ?? '0')
@@ -79,13 +77,11 @@ function applySettingsFromQuery(params: URLSearchParams) {
         // @ts-ignore
         svg.call(zoom.transform, d3.zoomIdentity.translate(x, y).scale(scale))
     }
-    const selectedRegionsString = params.get('selected')
-    if (selectedRegionsString === null)
-        selectedRegions = [0]
-    else
-        selectedRegions = selectedRegionsString.split('-').map(s => parseInt(s))
-    northUp = params.get("rotate") === '1'
-    toggleNorth.checked = northUp
+    const selectedRegionsString = params.get('selected') || getFromLocalStorage('selectedRegions', '0')
+    selectedRegions = selectedRegionsString.split('-').map(s => parseInt(s))
+
+    let northUpParam = params.get("rotate") || getFromLocalStorage('northUp', '0')
+    toggleNorth.checked = northUpParam === '1'
 
     isEmbed = params.get('embed') === '1'
     if (isEmbed) {
@@ -204,6 +200,10 @@ async function loadData(planet: string): Promise<Planet> {
 }
 
 async function loadMap(planet: string, regionType: string) {
+    const hideTooltip = () => {
+        tooltip.style("opacity", 0.0)
+    }
+
     currentPlanet = planet
     currentRegionType = regionType
 
@@ -217,9 +217,16 @@ async function loadMap(planet: string, regionType: string) {
 
     // Helper to get selected colors (excluding 'all')
     function getSelectedColors() {
-        const checked = colorFilter.selectAll("input[type=checkbox]:checked").nodes() as HTMLInputElement[]
-        const values = checked.map((input) => input.value)
-        if (values.includes("all")) return true
+        const checkBoxes = colorFilter.selectAll("input[type=checkbox]").nodes() as HTMLInputElement[]
+        const checkedColors = checkBoxes.filter((input) => input.checked)
+        const checkedIndexes = checkedColors.map((input) => checkBoxes.indexOf(input))
+        saveToLocalStorage('selectedRegions', checkedIndexes.join('-'))
+        const values = checkedColors.map((input) => input.value)
+
+        if (values.includes("all")) {
+            return true
+        }
+
         return new Set(values)
     }
 
@@ -233,6 +240,7 @@ async function loadMap(planet: string, regionType: string) {
     g.attr("transform", currentTransform)
     const imgTransform = northUp ? `rotate(180, ${width / 2}, ${height / 2})` : ""
     const invertFilter = northUp ? "invert(1)" : "none"
+
     g.append("image")
         .attr("class", "terrainImage")
         .attr("href", `data/${planet}_terrain.webp`)
@@ -246,11 +254,7 @@ async function loadMap(planet: string, regionType: string) {
         .style("filter", invertFilter)
 
 
-    const hideTooltip = () => {
-        tooltip.style("opacity", 0.0)
-    }
     svg.on("mouseleave", hideTooltip)
-
     svg.on("mousemove", function (event) {
         // Get mouse position in screen coords
         const [mouseX, mouseY] = d3.pointer(event)
@@ -384,8 +388,9 @@ async function loadMap(planet: string, regionType: string) {
     }
 
     render = () => {
-        const showTerrain = document.getElementById("toggleTerrain") as HTMLInputElement
-        const showSpawn = document.getElementById("toggleSpawn") as HTMLInputElement
+
+        const showTerrain = toggleTerrain
+        const showSpawn = toggleSpawn
 
         svg.select(".terrainImage").attr("visibility", showTerrain.checked ? "visible" : "hidden")
 
@@ -472,6 +477,7 @@ async function loadMap(planet: string, regionType: string) {
                 .style("display", "block")
                 .style("margin-right", "10px")
         })
+
         for (const i in colorFilter.selectAll("input[type=checkbox]").nodes())
             if (selectedRegions.includes(parseInt(i))) {
                 const nodes = colorFilter.selectAll("input[type=checkbox]").nodes()
@@ -488,11 +494,9 @@ async function loadMap(planet: string, regionType: string) {
                 return
             }
 
-            if (input.value === "all") {
-                if (input.checked) {
-                    colorFilter.selectAll("input[type=checkbox]").property("checked", false)
-                    input.checked = true
-                }
+            if (input.value === "all" && input.checked) {
+                colorFilter.selectAll("input[type=checkbox]").property("checked", false)
+                input.checked = true
             } else {
                 if (input.checked) {
                     colorFilter.select("input[value=all]").property("checked", false)
@@ -522,8 +526,8 @@ let canvasHeight = -1
 setCanvasSize(parseInt(params.get('width') || '800'), parseInt(params.get('height') || '800'))
 const width = +svg.attr("width")
 const height = +svg.attr("height")
-let currentPlanet = params.get('planet') || 'lunar'
-let currentRegionType = params.get('region') || 'mining'
+let currentPlanet = params.get('planet') || getFromLocalStorage('planet', 'lunar')
+let currentRegionType = params.get('region') || getFromLocalStorage('region', 'mining')
 let selectedRegions = [0]
 let northUp = false
 let mapWidth = 4000
@@ -531,10 +535,8 @@ let mapHeight = 4000
 
 themeToggle?.addEventListener('click', onClickThemeToggle)
 
-let updateRender = () => {
-}
-let render = () => {
-}
+let updateRender = () => {}
+let render = () => {}
 
 const zoom = d3.zoom()
     .scaleExtent([1, 100])
@@ -547,32 +549,36 @@ const zoom = d3.zoom()
     })
 applySettingsFromQuery(params)
 
-loadMap(currentPlanet, currentRegionType).then(() => {
-})
+loadMap(currentPlanet, currentRegionType).then(() => {})
 
 d3.selectAll("#planetButtons button").on("click", function () {
     const planet = d3.select(this).attr("data-file")
     // @ts-ignore
     svg.call(zoom.transform, d3.zoomIdentity)
     selectedRegions = [0]
-    loadMap(planet, currentRegionType).then(() => {
-    })
+    saveToLocalStorage('selectedRegions', '0')
+    saveToLocalStorage('planet', planet)
+
+    loadMap(planet, currentRegionType).then(() => {})
 })
 d3.selectAll("#regionTypeButtons button").on("click", function () {
     selectedRegions = [0]
     currentRegionType = d3.select(this).attr("data-region")
+    saveToLocalStorage('region', currentRegionType)
     updateRender()
 })
 d3.select("#toggleTerrain").on("change", () => {
+    saveToLocalStorage('terrain', toggleTerrain.checked ? '1' : '0')
     render()
 })
 d3.select("#toggleSpawn").on("change", () => {
+    saveToLocalStorage('spawn', toggleSpawn.checked ? '1' : '0')
     render()
 })
 d3.select("#toggleNorth").on("change", () => {
     northUp = d3.select("#toggleNorth").property("checked")
-    loadMap(currentPlanet, currentRegionType).then(() => {
-    })
+    saveToLocalStorage('northUp', northUp ? '1' : '0')
+    loadMap(currentPlanet, currentRegionType).then(() => {})
 })
 d3.select("#share").on("click", () => {
     getSettingsFromUI()

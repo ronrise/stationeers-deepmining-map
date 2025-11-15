@@ -40,7 +40,7 @@
     </div>
 </div>
 
-<div id="root" class="flex flex-row justify-center mb-10 pl-10 pr-10">
+<div id="root" class="flex flex-row justify-center mb-10 pl-10 pr-10 flex-wrap">
     <div id="canvasContainer" style="position: relative;">
         <svg id="svg" style="position: absolute; top: 0; left: 0;"></svg>
         <div id="iconLayer"
@@ -48,20 +48,24 @@
         </div>
     </div>
 
-    <div id="sidePane" class="ml-20">
-        <h3 class="text-2xl mb-3">Settings</h3>
-        <label class="block">
-            <input type="checkbox" id="toggleTerrain" checked> Terrain
-        </label>
-        <label class="block">
-            <input type="checkbox" id="toggleSpawn"> Start Locations
-        </label>
-        <label class="block">
-            <input type="checkbox" id="toggleNorth"> North Up
-        </label>
+    <div id="sidePane" class="ml-20 flex flex-row lg:flex-col mt-10 lg:mt-0">
+        <div>
+            <h3 class="text-2xl mb-3">Settings</h3>
+            <label class="block">
+                <input type="checkbox" id="toggleTerrain" checked> Terrain
+            </label>
+            <label class="block">
+                <input type="checkbox" id="toggleSpawn"> Start Locations
+            </label>
+            <label class="block">
+                <input type="checkbox" id="toggleNorth"> North Up
+            </label>
+        </div>
+        <div class="ml-3 lg:ml-0 lg:mt-10">
+            <h3 class="text-2xl mb-3">Regions</h3>
+            <div id="colorFilter"></div>
+        </div>
 
-        <h3 class="text-2xl mt-10 mb-3">Regions</h3>
-        <div id="colorFilter"></div>
     </div>
 
     <div class="tooltip" id="tooltip"></div>

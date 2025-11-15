@@ -11,6 +11,7 @@ https://siteworxpro.github.io/stationeers-deepmining-map/
 - Code updated to typeScript.
 - tailwindcss added for styling.
 - light and dark mode support.
+- settings saved in local storage.
 
 Running Stationeers Deep Mining Map in Docker
 ```shell
