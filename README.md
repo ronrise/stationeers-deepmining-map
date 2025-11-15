@@ -1,7 +1,10 @@
 # Stationeers Deep Mining Map
 
-Live version at
+Original Live version at
 https://aproposmath.github.io/stationeers-deepmining-map
+
+This fork live at
+https://ronrise.github.io/stationeers-deepmining-map/
 
 forked from
 https://github.com/aproposmath/stationeers-deepmining-map
