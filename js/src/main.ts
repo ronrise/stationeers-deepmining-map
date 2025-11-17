@@ -9,6 +9,10 @@ import {AUTOLATHE_ICON_URL, PLAYER_ICON_URL} from "./constants";
 import {onClickThemeToggle} from "./theme";
 import {getFromLocalStorage, saveToLocalStorage} from "./localstorage.ts";
 
+// Modal
+import {closeModal, openModal} from './modal';
+;(window as any).closeModal = closeModal;
+
 // State variables
 const params = new URLSearchParams(window.location.search)
 let canvasWidth = parseInt(params.get('width') || '800')
@@ -79,7 +83,9 @@ function getSettingsFromUI() {
 
     const query = new URLSearchParams(settings).toString()
     const url = `${window.location.origin}${window.location.pathname}?${query}`
-    navigator.clipboard.writeText(url).then(() => alert("Link copied to clipboard!"))
+    navigator.clipboard.writeText(url).then(() => {
+        openModal('Link copied to clipboard!', `<p class="mt-10"><a target="_blank" href="${url}">${url}</a></p>`)
+    })
 }
 
 function applySettingsFromQuery(params: URLSearchParams) {
